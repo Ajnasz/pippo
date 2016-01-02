@@ -1,0 +1,18 @@
+{
+	"esnext": true,
+	"validateQuoteMarks": "'",
+	"disallowSpacesInsideParentheses": true,
+	"disallowSpacesInsideBrackets": true,
+	"disallowTrailingWhitespace": true,
+	"disallowMultipleLineBreaks": true,
+	"requireSpaceBetweenArguments": true,
+	"requireSpaceAfterKeywords": true,
+	"requireSpaceBeforeBlockStatements": true,
+	"requireSpaceBeforeObjectValues": true,
+	"disallowSpaceAfterObjectKeys": true,
+	"requireSpaceAfterBinaryOperators": true,
+	"requireSpaceBeforeBinaryOperators": true,
+	"requirePaddingNewLineAfterVariableDeclaration": true,
+	"requireOperatorBeforeLineBreak": true,
+	"requireSemicolons": true
+}
