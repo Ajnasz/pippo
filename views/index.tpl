@@ -12,18 +12,21 @@
 		<script src="/static/index.js"></script>
 	</head>
 	<body>
-		<form id="Setting" class="inline-form">
-			<div class="control-group">
-				<label for="InputFrom">From</label>
-				<input type="number" name="from" id="InputFrom" min="0" value="0">
-			</div>
-			<div class="control-group">
-				<label for="InputTo">To</label>
-				<input type="number" name="to" id="InputTo" min="-1" value="120">
-			</div>
-			<button type="submit">Update</button>
-			<button id="Reset" type="reset">Reset</button>
-		</form>
+		<header id="Head">
+			<h1>Pippo</h1>
+			<form id="Setting" class="inline-form">
+				<div class="control-group">
+					<label for="InputFrom">From</label>
+					<input type="number" name="from" id="InputFrom" min="0" value="0">
+				</div>
+				<div class="control-group">
+					<label for="InputTo">To</label>
+					<input type="number" name="to" id="InputTo" min="-1" value="120">
+				</div>
+				<button type="submit">Update</button>
+				<button id="Reset" type="reset">Reset</button>
+			</form>
+		</header>
 		<div class="charts">
 			<div class="gauges">
 				<div id="TemperatureVal" class="gauge"></div>

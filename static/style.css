@@ -7,6 +7,17 @@ body {
 	font-size: 15px;
 }
 
+#Head {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
+h1 {
+	margin: 0;
+	padding: 0.5rem;
+}
+
 .inline-form {
 	text-align: right;
 	padding: 0.5rem;
