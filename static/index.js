@@ -3,6 +3,22 @@
 (function () {
 	'use strict';
 
+	const duration = Object.freeze((function () {
+		const sec = 1000,
+			min = 60 * sec,
+			hour = 60 * min,
+			day = 24 * hour,
+			week = 7 * day;
+
+		return {
+			SECOND: sec,
+			MINUTE: min,
+			HOUR: hour,
+			DAY: day,
+			WEEK: week
+		};
+	}()));
+
 	const bgColor = '#333333';
 	const celsius = '°C';
 
@@ -197,7 +213,7 @@
 		var lastUpdate = 0;
 
 		return function updateTitle(temp, hum) {
-			if (!document.hidden || Date.now() - lastUpdate > 1000 * 60 * 60) {
+			if (!document.hidden || Date.now() - lastUpdate > duration.MINUTE * 15) {
 				$('title').text(`${temp}${celsius}, ${hum}% - Temperature / Humidity`);
 				lastUpdate = Date.now();
 			}
