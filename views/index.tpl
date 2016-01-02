@@ -4,6 +4,7 @@
 		<title>Temperature and Humidity</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<link rel="stylesheet" type="text/css" href="/static/style.css">
+		<link rel="icon" href="/static/pippo.png">
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 		<script src="https://code.highcharts.com/highcharts.js"></script>
 		<script src="https://code.highcharts.com/highcharts-more.js"></script>
