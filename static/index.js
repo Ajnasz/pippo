@@ -3,6 +3,15 @@
 (function () {
 	'use strict';
 
+	const bgColor = '#333333';
+	const celsius = '°C';
+
+	const temperatureContainer = '#Temperature';
+	const humidityContainer = '#Humidity';
+
+	const temperatureGaugeContainer = '#TemperatureVal';
+	const humidityGaugeContainer = '#HumidityVal';
+
 	var setting = {
 		get from () {
 			return +$('#InputFrom').val();
@@ -16,7 +25,7 @@
 	var gaugeOptions = {
 
 		chart: {
-			backgroundColor: '#333333',
+			backgroundColor: bgColor,
 			type: 'solidgauge'
 		},
 
@@ -28,7 +37,7 @@
 			startAngle: -90,
 			endAngle: 90,
 			background: {
-				backgroundColor: '#333333',
+				backgroundColor: bgColor,
 				innerRadius: '60%',
 				outerRadius: '100%',
 				shape: 'arc'
@@ -84,14 +93,14 @@
 		var temp = fixValue(+data.temperatures[0].value),
 			hum = fixValue(+data.humiditys[0].value);
 
-		$('#TemperatureVal').highcharts().series[0].points[0].update(temp);
-		$('#HumidityVal').highcharts().series[0].points[0].update(hum);
+		$(temperatureGaugeContainer).highcharts().series[0].points[0].update(temp);
+		$(humidityGaugeContainer).highcharts().series[0].points[0].update(hum);
 		updateTitle(temp, hum);
 	}
 
 	function updateChart(data) {
-		$('#Temperature').highcharts().series[0].setData(transformData(data.temperatures));
-		$('#Humidity').highcharts().series[0].setData(transformData(data.humiditys));
+		$(temperatureContainer).highcharts().series[0].setData(transformData(data.temperatures));
+		$(humidityContainer).highcharts().series[0].setData(transformData(data.humiditys));
 	}
 
 	function getCurrentValues() {
@@ -124,7 +133,9 @@
 	}());
 
 	function createTemperatureGauge() {
-		$('#TemperatureVal').highcharts(Highcharts.merge(gaugeOptions, {
+		var color = ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black');
+
+		$(temperatureGaugeContainer).highcharts(Highcharts.merge(gaugeOptions, {
 			yAxis: {
 				min: 10,
 				max: 50,
@@ -134,15 +145,12 @@
 			},
 
 			series: [{
-				name: 'Temperature',
 				data: [0],
 				dataLabels: {
-					format: '<div style="text-align:center"><span style="font-size:1.5rem;color:' +
-						((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y}</span><br/>' +
-						'<span style="font-size:12px;color:silver">°C</span></div>'
-				},
-				tooltip: {
-					valueSuffix: ' °C'
+					format: `<div style="text-align:center">` +
+						`<span style="font-size:1.5rem;color:${color}">{y}</span>` +
+						`<br/>` +
+						`<span style="font-size:1rem;color:silver">${celsius}</span></div>`
 				}
 			}]
 
@@ -150,7 +158,9 @@
 	}
 
 	function createHumidityGauge() {
-		$('#HumidityVal').highcharts(Highcharts.merge(gaugeOptions, {
+		var color = ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black');
+
+		$(humidityGaugeContainer).highcharts(Highcharts.merge(gaugeOptions, {
 			yAxis: {
 				min: 0,
 				max: 100,
@@ -160,15 +170,12 @@
 			},
 
 			series: [{
-				name: 'Humidity',
 				data: [0],
 				dataLabels: {
-					format: '<div style="text-align:center"><span style="font-size:1.5rem;color:' +
-						((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y}</span><br/>' +
-						'<span style="font-size:12px;color:silver">%</span></div>'
-				},
-				tooltip: {
-					valueSuffix: ' %'
+					format: `<div style="text-align:center">` +
+						`<span style="font-size:1.5rem;color:${color}">{y}</span>` +
+						`<br/>` +
+						`<span style="font-size:1rem;color:silver">%</span></div>`
 				}
 			}]
 
@@ -177,7 +184,7 @@
 
 	var lineChartConf = {
 		chart: {
-			backgroundColor: '#333333',
+			backgroundColor: bgColor,
 			type: 'line'
 		},
 		title: false,
@@ -186,19 +193,27 @@
 		}
 	};
 
-	function updateTitle(temp, hum) {
-		$('title').text(`${temp}°C, ${hum}% - Temperature / Humidity`);
-	}
+	var updateTitle = (function () {
+		var lastUpdate = 0;
+
+		return function updateTitle(temp, hum) {
+			if (!document.hidden || Date.now() - lastUpdate > 1000 * 60 * 60) {
+				$('title').text(`${temp}${celsius}, ${hum}% - Temperature / Humidity`);
+				lastUpdate = Date.now();
+			}
+		};
+
+	}());
 
 	function createTemperatureChart() {
-		$('#Temperature').highcharts(Highcharts.merge(lineChartConf, {
+		$(temperatureContainer).highcharts(Highcharts.merge(lineChartConf, {
 			tooltip: {
 				formatter: function () {
 					var d = new Date(this.x),
 						date = d.toLocaleString(),
 						y = fixValue(this.y);
 
-					return `${date}<br><b>${y}°C</b>`;
+					return `${date}<br><b>${y}${celsius}</b>`;
 				}
 			},
 			series: [{
@@ -209,7 +224,7 @@
 	}
 
 	function createHumidityChart() {
-		$('#Humidity').highcharts(Highcharts.merge(lineChartConf, {
+		$(humidityContainer).highcharts(Highcharts.merge(lineChartConf, {
 
 			tooltip: {
 				formatter: function () {
