@@ -205,7 +205,12 @@
 		},
 		title: false,
 		xAxis: {
-			type: 'datetime'
+			type: 'datetime',
+			labels: {
+				formatter: function () {
+					return (new Date(this.value)).toLocaleTimeString();
+				}
+			}
 		}
 	};
 
