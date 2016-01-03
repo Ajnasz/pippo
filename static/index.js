@@ -278,6 +278,18 @@
 			setTimeout(getData);
 		});
 
+		var visibilitychangeTimer = 0;
+
+		$(document).on('visibilitychange', function () {
+			if (visibilitychangeTimer) {
+				clearTimeout(visibilitychangeTimer);
+			}
+
+			if (!document.hidden) {
+				visibilitychangeTimer = setTimeout(getData, 2000);
+			}
+		});
+
 		getData();
 	});
 
