@@ -98,3 +98,28 @@ button:active {
 	width: 300px;
 	box-sizing: border-box;
 }
+
+@media (max-width: 800px) {
+	.charts {
+		flex-direction: column;
+		justify-content: center;
+	}
+
+	.gauges {
+		flex-direction: row;
+		order: 2;
+	}
+	.gauge {
+		height: 180px;
+		width: 260px;
+	}
+}
+
+@media (max-width: 575px) {
+	.gauge {
+		margin: auto;
+	}
+	.gauges {
+		flex-direction: column;
+	}
+}
