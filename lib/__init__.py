@@ -16,9 +16,11 @@ class DHTStorage():
 
 	def add_humidity(self, value):
 		self.send('humidity', value)
+		self.remove_old('humidity')
 
 	def add_temperature(self, value):
 		self.send('temperature', value)
+		self.remove_old('temperature')
 
 	def get_data(self, name, start=0, end=200):
 		return self.redis.lrange(name, start, end)
@@ -28,3 +30,6 @@ class DHTStorage():
 
 	def get_humidity(self, start=0, end=200):
 		return self.get_data(self.get_key('humidity'), start, end)
+
+	def remove_old(self, name, len=100000):
+		self.redis.ltrim(self.get_key(name), 0, len)
