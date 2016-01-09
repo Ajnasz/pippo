@@ -99,6 +99,20 @@ button:active {
 	box-sizing: border-box;
 }
 
+.gauge-data-label {
+	text-align: center;
+}
+
+.gauge-data-label-unit{
+	font-size: 1rem;
+	color: silver;
+}
+
+.gauge-data-label-value {
+	font-size: 1.5rem;
+	color: #f0f0f3;
+}
+
 @media (max-width: 800px) {
 	.charts {
 		flex-direction: column;
