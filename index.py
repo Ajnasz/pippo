@@ -1,5 +1,5 @@
-from bottle import route, run, template, static_file, response
-from lib import DHTStorage
+from bottle import route, run, template, static_file, response, post, get
+from lib import DHTStorage, Photo
 import json
 
 with open('config.json') as data_file:
@@ -7,11 +7,11 @@ with open('config.json') as data_file:
 
 client_key = config['key']
 
-@route('/')
+@get('/')
 def index():
     return template('index')
 
-@route('/data/<start>/<end>')
+@get('/data/<start>/<end>')
 def data(start, end):
     d = DHTStorage(client_key)
     return {
@@ -19,8 +19,17 @@ def data(start, end):
             'temperatures': map(json.loads, d.get_temperature(start, end)),
     }
 
-@route('/static/<path:path>')
+@get('/static/<path:path>')
 def static(path):
     return static_file(path, root='./static')
+
+@post('/take-photo')
+def take_photo():
+    p = Photo()
+    p.take_photo()
+
+    return {
+            'ok': True
+    }
 
 run(host='0.0.0.0', port=8080, debug=True)

@@ -33,3 +33,11 @@ class DHTStorage():
 
 	def remove_old(self, name, len=100000):
 		self.redis.ltrim(self.get_key(name), 0, len)
+
+
+class Photo():
+	def __init__(self):
+		self.redis = redis.StrictRedis(host='localhost', port=6379, db=0)
+
+	def take_photo(self):
+		self.redis.publish('take-photo', time.time())

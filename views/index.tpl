@@ -14,6 +14,7 @@
 	<body>
 		<header id="Head">
 			<h1>Pippo</h1>
+			<div><button type="button" id="TakePhoto">Take photo</button></div>
 			<form id="Setting" class="inline-form">
 				<div class="control-group">
 					<label for="InputFrom">From</label>

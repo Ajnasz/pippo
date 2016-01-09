@@ -312,6 +312,15 @@
 		return new Highcharts.Chart(getElem(humidityContainer), options);
 	}
 
+	function takePhoto() {
+		var init = {
+			method: 'POST'
+		};
+		var req = new window.Request('/take-photo', init);
+
+		return fetch(req);
+	}
+
 	on(document, 'DOMContentLoaded', function () {
 
 		temperatureChart = createTemperatureChart();
@@ -327,6 +336,8 @@
 		on(getElem('#Reset'), 'mouseup', function () {
 			setTimeout(getData);
 		});
+
+		on(getElem('#TakePhoto'), 'click', takePhoto);
 
 		var visibilitychangeTimer = 0;
 
