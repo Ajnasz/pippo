@@ -1,7 +1,11 @@
-/*global $, Highcharts*/
+/*global Highcharts*/
 
 (function () {
 	'use strict';
+
+	function getElem(selector) {
+		return document.querySelector(selector);
+	}
 
 	const duration = Object.freeze((function () {
 		const sec = 1000,
@@ -28,13 +32,16 @@
 	const temperatureGaugeContainer = '#TemperatureVal';
 	const humidityGaugeContainer = '#HumidityVal';
 
+	var temperatureChart, humidityChart;
+	var temperatureGaugeChart, humidityGaugeChart;
+
 	var setting = {
 		get from () {
-			return +$('#InputFrom').val();
+			return Number(getElem('#InputFrom').value);
 		},
 
 		get to() {
-			return +$('#InputTo').val();
+			return Number(getElem('#InputTo').value);
 		}
 	};
 
@@ -105,53 +112,59 @@
 		return Math.round(num * 100) / 100;
 	}
 
-	function setVal(data) {
+	function setGaugeValues(data) {
 		var temp = fixValue(+data.temperatures[0].value),
 			hum = fixValue(+data.humiditys[0].value);
 
-		$(temperatureGaugeContainer).highcharts().series[0].points[0].update(temp);
-		$(humidityGaugeContainer).highcharts().series[0].points[0].update(hum);
+		temperatureGaugeChart.series[0].points[0].update(temp);
+		humidityGaugeChart.series[0].points[0].update(hum);
 		updateTitle(temp, hum);
+
+		return Promise.resolve(data);
 	}
 
 	function updateChart(data) {
-		$(temperatureContainer).highcharts().series[0].setData(transformData(data.temperatures));
-		$(humidityContainer).highcharts().series[0].setData(transformData(data.humiditys));
+		temperatureChart.series[0].setData(transformData(data.temperatures));
+		humidityChart.series[0].setData(transformData(data.humiditys));
+
+		return Promise.resolve(data);
 	}
 
 	function getCurrentValues() {
-		return $.get('/data/0/0');
+		return window.fetch('/data/0/0');
+	}
+
+	function responseToJSON(response) {
+		return Promise.resolve(response.json());
 	}
 
 	var getData = (function () {
 		var timer;
 
+		function schedule() {
+			if (timer) {
+				clearTimeout(timer);
+			}
+
+			timer = setTimeout(getData, 60000);
+		}
+
 		return function getData() {
 
-			$.get('/data/' + setting.from + '/' + setting.to)
-			.then(function (data) {
-				updateChart(data);
-
-				return getCurrentValues();
-
-			})
-			.then(function (data) {
-				setVal(data);
-
-				if (timer) {
-					clearTimeout(timer);
-				}
-
-				timer = setTimeout(getData, 60000);
-			});
+			window.fetch('/data/' + setting.from + '/' + setting.to)
+				.then(responseToJSON)
+				.then(updateChart)
+				.then(getCurrentValues)
+				.then(responseToJSON)
+				.then(setGaugeValues)
+				.then(schedule);
 
 		};
 	}());
 
 	function createTemperatureGauge() {
 		var color = ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black');
-
-		$(temperatureGaugeContainer).highcharts(Highcharts.merge(gaugeOptions, {
+		var options = Highcharts.merge(gaugeOptions, {
 			yAxis: {
 				min: 10,
 				max: 50,
@@ -170,13 +183,15 @@
 				}
 			}]
 
-		}));
+		});
+
+		return new Highcharts.Chart(getElem(temperatureGaugeContainer), options);
 	}
 
 	function createHumidityGauge() {
 		var color = ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black');
 
-		$(humidityGaugeContainer).highcharts(Highcharts.merge(gaugeOptions, {
+		var options = Highcharts.merge(gaugeOptions, {
 			yAxis: {
 				min: 0,
 				max: 100,
@@ -195,7 +210,9 @@
 				}
 			}]
 
-		}));
+		});
+
+		return new Highcharts.Chart(getElem(humidityGaugeContainer), options);
 	}
 
 	var lineChartConf = {
@@ -219,7 +236,7 @@
 
 		return function updateTitle(temp, hum) {
 			if (!document.hidden || Date.now() - lastUpdate > duration.MINUTE * 15) {
-				$('title').text(`${temp}${celsius}, ${hum}% - Temperature / Humidity`);
+				getElem('title').textContent = `${temp}${celsius}, ${hum}% - Temperature / Humidity`;
 				lastUpdate = Date.now();
 			}
 		};
@@ -227,7 +244,7 @@
 	}());
 
 	function createTemperatureChart() {
-		$(temperatureContainer).highcharts(Highcharts.merge(lineChartConf, {
+		var options = Highcharts.merge(lineChartConf, {
 			tooltip: {
 				formatter: function () {
 					var d = new Date(this.x),
@@ -241,12 +258,13 @@
 				name: 'Temperature',
 				data: []
 			}]
-		}));
+		});
+
+		return new Highcharts.Chart(getElem(temperatureContainer), options);
 	}
 
 	function createHumidityChart() {
-		$(humidityContainer).highcharts(Highcharts.merge(lineChartConf, {
-
+		var options = Highcharts.merge(lineChartConf, {
 			tooltip: {
 				formatter: function () {
 					var d = new Date(this.x),
@@ -260,27 +278,30 @@
 				name: 'Humidity',
 				data: []
 			}]
-		}));
+		});
+
+		return new Highcharts.Chart(getElem(humidityContainer), options);
 	}
 
-	$(document).ready(function () {
+	document.addEventListener('DOMContentLoaded', function () {
 
-		createTemperatureChart();
-		createHumidityChart();
-		createTemperatureGauge();
-		createHumidityGauge();
-		$('#Setting').on('submit', function (e) {
+		temperatureChart = createTemperatureChart();
+		humidityChart = createHumidityChart();
+		temperatureGaugeChart = createTemperatureGauge();
+		humidityGaugeChart = createHumidityGauge();
+
+		getElem('#Setting').addEventListener('submit', function (e) {
 			e.preventDefault();
 			getData();
 		});
 
-		$('#Reset').on('mouseup', function () {
+		getElem('#Reset').addEventListener('mouseup', function () {
 			setTimeout(getData);
 		});
 
 		var visibilitychangeTimer = 0;
 
-		$(document).on('visibilitychange', function () {
+		document.addEventListener('visibilitychange', function () {
 			if (visibilitychangeTimer) {
 				clearTimeout(visibilitychangeTimer);
 			}
