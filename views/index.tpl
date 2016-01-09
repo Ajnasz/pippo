@@ -21,7 +21,7 @@
 				</div>
 				<div class="control-group">
 					<label for="InputTo">To</label>
-					<input type="number" name="to" id="InputTo" min="-1" value="120">
+					<input type="number" name="to" id="InputTo" min="-1" value="240">
 				</div>
 				<button type="submit">Update</button>
 				<button id="Reset" type="reset">Reset</button>
