@@ -5,6 +5,7 @@ import os
 import Adafruit_DHT
 import Adafruit_IO
 import json
+import requests
 from lib import DHTStorage
 
 # Parse command line parameters.
@@ -35,21 +36,32 @@ def send(client, humidity, temperature):
 	client.send('humidity', '{0:0.3f}'.format(humidity))
 	client.send('temperature',  '{0:0.3f}'.format(temperature))
 
+def toadaio(client_key, humidity, temperature):
+	try:
+		aio = Adafruit_IO.Client(client_key)
+		send(aio, humidity, temperature)
+	except Adafruit_IO.errors.RequestError:
+		pass
+	except requests.exceptions.ConnectionError:
+		pass
+
+def todhtstorage(client_key, humidity, temperature):
+	storage = DHTStorage(client_key)
+
+	storage.add_temperature(temperature)
+	storage.add_humidity(humidity)
+
 if humidity is not None and temperature is not None:
 
 	with open(os.path.join(os.path.dirname(__file__), 'config.json')) as data_file:
 		config = json.load(data_file)
 
 	client_key = config['key']
-
-	aio = Adafruit_IO.Client(client_key)
-	storage = DHTStorage(client_key)
-
-	send(aio, humidity, temperature)
-
-	storage.add_temperature(temperature)
-	storage.add_humidity(humidity)
+	todhtstorage(client_key, humidity, temperature)
+	toadaio(client_key, humidity, temperature)
 	# print 'Temp={0:0.1f}*  Humidity={1:0.1f}%'.format(temperature, humidity)
 else:
 	print 'Failed to get reading. Try again!'
 	sys.exit(1)
+
+# vim: set ts=4 sw=4 noet
