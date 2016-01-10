@@ -36,13 +36,7 @@ def send(client, humidity, temperature):
 	client.send('humidity', '{0:0.3f}'.format(humidity))
 	client.send('temperature',  '{0:0.3f}'.format(temperature))
 
-lastadasent = 0
 def toadaio(client_key, humidity, temperature):
-	if lastadasent > time.time() - 60 * 5:
-		return
-
-	lastadasent = time.time()
-
 	try:
 		aio = Adafruit_IO.Client(client_key)
 		send(aio, humidity, temperature)
