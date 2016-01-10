@@ -318,7 +318,29 @@
 		};
 		var req = new window.Request('/take-photo', init);
 
-		return fetch(req);
+		return window.fetch(req);
+	}
+
+	function showPhoto() {
+		updatePhotoSize();
+		getElem('#Photo').classList.add('visible');
+	}
+
+	function updatePhotoSize() {
+		getElem('#Photo').style.width = window.innerWidth + 'px';
+		getElem('#Photo').style.height = window.innerHeight + 'px';
+	}
+
+	function hidePhoto() {
+		getElem('#Photo').classList.remove('visible');
+	}
+
+	function updatePhoto(msg) {
+		var data = JSON.parse(msg.data);
+
+		if (data.data) {
+			getElem('#Photo img').src = `/static/photo.png?${data}`;
+		}
 	}
 
 	on(document, 'DOMContentLoaded', function () {
@@ -338,6 +360,9 @@
 		});
 
 		on(getElem('#TakePhoto'), 'click', takePhoto);
+		on(getElem('#ShowPhoto'), 'click', showPhoto);
+		on(getElem('#Photo'), 'click', hidePhoto);
+		on(window, 'resize', updatePhotoSize);
 
 		var visibilitychangeTimer = 0;
 
@@ -350,6 +375,10 @@
 				visibilitychangeTimer = setTimeout(getData, 2000);
 			}
 		});
+
+		var e = new window.EventSource('/subscribe');
+
+		e.onmessage = updatePhoto;
 
 		getData();
 	});
