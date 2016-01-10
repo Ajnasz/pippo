@@ -45,7 +45,7 @@
 			</section>
 
 			<section id="Photo">
-				<img src="about:blank" alt="Photo">
+				<img src="/static/photo.jpg" alt="Photo">
 			</section>
 		</main>
 	</body>
