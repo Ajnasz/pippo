@@ -3,7 +3,7 @@ import redis
 import time
 
 def take_photo():
-    camera = picamera.Camera()
+    camera = picamera.PiCamera()
     camera.capture('static/photo.jpg')
     camera.close()
     r.publish('photo', time.time())

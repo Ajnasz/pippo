@@ -38,6 +38,12 @@ class DHTStorage():
 class Photo():
 	def __init__(self):
 		self.redis = redis.StrictRedis(host='localhost', port=6379, db=0)
+		self.pubsub = self.redis.pubsub()
+		self.last_photo = 0
+		self.subscribe()
+
+	def subscribe(self):
+		self.pubsub.subscribe('photo')
 
 	def take_photo(self):
 		self.redis.publish('take-photo', time.time())
