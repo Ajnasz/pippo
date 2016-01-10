@@ -339,7 +339,7 @@
 		var data = JSON.parse(msg.data);
 
 		if (data.data) {
-			getElem('#Photo img').src = `/static/photo.jpg?${data}`;
+			getElem('#Photo img').src = `/static/photo.jpg?${data.data}`;
 		}
 	}
 
