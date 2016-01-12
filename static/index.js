@@ -91,9 +91,9 @@
 		// the value axis
 		yAxis: {
 			stops: [
-				[0.1, '#55BF3B'], // green
-				[0.5, '#DDDF0D'], // yellow
-				[0.9, '#DF5353'] // red
+				[0.1, '#FF9925'],
+				[0.5, '#FF8425'],
+				[0.9, '#FF3925']
 			],
 			lineWidth: 0,
 			minorTickInterval: null,
