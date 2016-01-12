@@ -29,8 +29,10 @@
 						<label for="InputTo">To</label>
 						<input type="number" name="to" id="InputTo" min="-1" value="240">
 					</div>
-					<button type="submit" data-icon="" class="icon_refresh"></button>
-					<button id="Reset" type="reset" data-icon="" class="icon_house"></button>
+					<div class="control-group submit-area">
+						<button type="submit" data-icon="" class="icon_refresh"></button>
+						<button id="Reset" type="reset" data-icon="" class="icon_house"></button>
+					</div>
 				</form>
 			</div>
 		</header>
