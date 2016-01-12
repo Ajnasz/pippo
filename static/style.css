@@ -96,6 +96,26 @@ body {
 	padding-right: 2rem;
 }
 
+#Photo {
+	display: none;
+}
+
+#Photo.visible {
+	position: absolute;
+	top: 0;
+	left: 0;
+
+	display: block;
+	width: 100%;
+	height: 100%;
+
+	background-color: rgba(33, 33, 33, 0.5);
+}
+
+#Photo img {
+	width: 100%;
+}
+
 .control-group {
 	float: right;
 }
@@ -205,15 +225,6 @@ button:active {
 	}
 }
 
-@media (max-width: 575px) {
-	.gauge {
-		margin: auto;
-	}
-	.gauges {
-		flex-direction: column;
-	}
-}
-
 @media (max-width: 780px) {
 	#Head h1 {
 		display: none;
@@ -253,22 +264,19 @@ button:active {
 	}
 }
 
-#Photo {
-	display: none;
-}
-
-#Photo.visible {
-	position: absolute;
-	top: 0;
-	left: 0;
-
-	display: block;
-	width: 100%;
-	height: 100%;
-
-	background-color: rgba(33, 33, 33, 0.5);
-}
-
-#Photo img {
-	width: 100%;
+@media (max-width: 575px) {
+	button[data-icon] {
+		font-size: 1.2rem;
+	}
+	#Setting input[type="number"] {
+		font-size: 1rem;
+	}
+	.gauges {
+		flex-direction: column;
+		padding: 0 10px;
+	}
+	.gauge {
+		margin: 0 auto 10px;
+		width: 100%;
+	}
 }
