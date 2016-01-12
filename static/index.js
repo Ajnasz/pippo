@@ -300,7 +300,7 @@
 		var options = Highcharts.merge(lineChartConf, {
 			tooltip: {
 				formatter: function () {
-					return getTooltip(this.x, this.y, celsius);
+					return getTooltip(this.x, this.y, '%');
 				}
 			},
 			series: [{
