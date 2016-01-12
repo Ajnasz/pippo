@@ -324,10 +324,16 @@ button:active {
 		padding: 0;
 		margin-bottom: 10px;
 	}
-	#Setting .control-group [data-icon]:first-child {
+	#Setting .control-group:last-child {
+		margin-bottom: 0;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
+	#Setting .control-group:last-child [data-icon]:first-child {
 		margin-left: 0;
 	}
-	#Setting .control-group [data-icon]:last-child {
+	#Setting .control-group:last-child [data-icon]:last-child {
 		margin-right: 0;
 	}
 }
