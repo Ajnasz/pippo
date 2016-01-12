@@ -38,7 +38,7 @@
 		};
 	}()));
 
-	const bgColor = '#333333';
+	const bgColor = 'rgba(0, 0, 0, 0.2)';
 	const celsius = '°C';
 	const textTemperature = 'Temperature';
 	const textHumidity = 'Humidity';

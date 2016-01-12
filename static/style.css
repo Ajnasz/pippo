@@ -83,16 +83,19 @@ button:active {
 }
 
 .linechart {
+	margin: 10px;
+	box-sizing: border-box;
 	height: 300px;
 }
 
 .gauges {
 	display: flex;
 	flex-direction: column;
-	justify-content: space-around;
+	justify-content: space-between;
 }
 
 .gauge {
+	margin: 10px;
 	height: 230px;
 	width: 300px;
 	box-sizing: border-box;
@@ -133,6 +136,13 @@ button:active {
 		margin: auto;
 	}
 	.gauges {
+		flex-direction: column;
+	}
+}
+
+@media (max-width: 980px) {
+	#Setting {
+		display: flex;
 		flex-direction: column;
 	}
 }
