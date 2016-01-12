@@ -43,7 +43,7 @@ def subscribe():
     response.cache_control = 'no-cache'
 
     # Set client-side auto-reconnect timeout, ms.
-    yield 'retry: 100\n\n'
+    yield 'retry: 110\n\n'
 
     # Keep connection alive no more then... (s)
     end = time.time() + 100
