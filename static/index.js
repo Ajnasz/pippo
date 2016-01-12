@@ -342,7 +342,6 @@
 			getElem('#Photo img').src = `/static/photo.jpg?${data.data}`;
 		}
 	}
-
 	on(document, 'DOMContentLoaded', function () {
 
 		temperatureChart = createTemperatureChart();

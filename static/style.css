@@ -7,46 +7,115 @@ body {
 	font-size: 15px;
 }
 
+.clr:after {
+	content: ' ';
+	display: table;
+	clear: both;
+	height: 0;
+}
+
+.row {
+	clear: both;
+}
+
+.col {
+	float: left;
+	box-sizing: border-box;
+}
+
+.col-10 {
+	width: 10%;
+}
+
+.col-20 {
+	width: 20%;
+}
+
+.col-30 {
+	width: 30%;
+}
+
+.col-40 {
+	width: 40%;
+}
+
+.col-50 {
+	width: 50%;
+}
+
+.col-60 {
+	width: 60%;
+}
+
+.col-70 {
+	width: 70%;
+}
+
+.col-80 {
+	width: 80%;
+}
+
+.col-90 {
+	width: 90%;
+}
+
+.col-100 {
+	width: 100%;
+}
+
 #Head {
-	display: flex;
-	flex-direction: row;
-	justify-content: space-between;
+	background-color: #444;
+	margin: 0 10px;
 }
 
-h1 {
+#Head h1 {
+	box-sizing: border-box;
+	width: 300px;
+	padding: 10px 0 0 10px;
 	margin: 0;
-	padding: 0.5rem;
 }
 
-.inline-form {
-	text-align: right;
-	padding: 0.5rem;
+#Controls {
+	box-sizing: border-box;
+	width: calc(100% - 300px);
+	padding-left: 10px;
+	display: flex;
+	justify-content: flex-end;
 }
 
-.inline-form .control-group {
-	display: inline-block;
-	margin-right: 1rem;
+#Setting {
+	box-sizing: border-box;
+	padding: 10px;
+	display: flex;
+	justify-content: flex-end;
+}
+#PhotoControls {
+	display: flex;
+	justify-content: flex-end;
+	box-sizing: border-box;
+	padding-right: 2rem;
 }
 
-.inline-form .control-group:last {
-	margin-right: 0;
+.control-group {
+	float: right;
 }
 
-.inline-form .control-group label {
-	margin-right: 0.8rem;
+label {
+	display: none;
 }
 
 input[type="text"],
 input[type="number"] {
-	background-color: #444;
+	background-color: #555;
 	border-radius: 3px;
 	border: none;
 	box-sizing: border-box;
 	color: #999;
 	font-family: inherit;
-	font-size: .8rem;
+	font-size: 2rem;
 	margin: 0.1rem;
-	padding: 0.3rem;
+	width: 5em;
+	padding: 0.3em 0.5em;
 	transition: background-color 0.2s;
 }
 
@@ -61,6 +130,11 @@ button {
 	padding: 0.3rem 0.5rem;
 	margin: 0.1rem;
 	transition: background-color 0.2s;
+}
+
+button[data-icon] {
+	font-size: 2rem;
+	margin: 0 0.5rem;
 }
 
 input[type="text"]:focus,
@@ -140,10 +214,42 @@ button:active {
 	}
 }
 
-@media (max-width: 980px) {
-	#Setting {
-		display: flex;
+@media (max-width: 780px) {
+	#Head h1 {
+		display: none;
+	}
+	#Controls {
+		width: 100%;
 		flex-direction: column;
+		justify-content: flex-start;
+	}
+
+	#Setting {
+		border-bottom: 1px solid #000;
+		justify-content: space-between;
+		order: 1;
+	}
+
+	#Setting [data-icon] {
+		width: 100%;
+	}
+
+	#PhotoControls {
+		order: 2;
+		justify-content: space-around;
+		padding-right: 0;
+	}
+	#PhotoControls [data-icon] {
+		width: 100%;
+	}
+}
+
+@media (max-width: 650px) {
+	button[data-icon] {
+		font-size: 1.5rem;
+	}
+	#Setting input[type="number"] {
+		font-size: 1.5rem;
 	}
 }
 
