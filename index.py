@@ -12,8 +12,6 @@ with open('config.json') as data_file:
 
 client_key = config['key']
 
-photo = Photo()
-
 @get('/')
 def index():
     return template('index')
@@ -38,29 +36,21 @@ def take_photo():
             'ok': True
     }
 
-messages = deque([])
+
 
 @get('/subscribe')
 def subscribe():
     response.content_type  = 'text/event-stream'
     response.cache_control = 'no-cache'
 
-    # Set client-side auto-reconnect timeout, ms.
-    yield 'retry: 110\n\n'
+    photo = Photo()
 
     # Keep connection alive no more then... (s)
-    end = time.time() + 100
-    while time.time() < end:
+    while True:
         message = photo.pubsub.get_message()
+
         if message:
-            messages.append(message)
-
-        if len(messages) > 1:
-            messages.popleft()
-
-        print messages
-        if len(messages) > 0:
-            yield 'data: %s\n\n' % json.dumps(messages[0])
+            yield 'data: %s\n\n' % json.dumps(message)
 
         sleep(1)
 
