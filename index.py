@@ -5,6 +5,7 @@ from lib import DHTStorage, Photo
 from gevent import sleep
 import json
 import time
+from collections import deque
 
 with open('config.json') as data_file:
 	config = json.load(data_file)
@@ -37,6 +38,8 @@ def take_photo():
             'ok': True
     }
 
+messages = deque([])
+
 @get('/subscribe')
 def subscribe():
     response.content_type  = 'text/event-stream'
@@ -50,8 +53,14 @@ def subscribe():
     while time.time() < end:
         message = photo.pubsub.get_message()
         if message:
-            print message
-            yield 'data: %s\n\n' % json.dumps(message)
+            messages.append(message)
+
+        if len(messages) > 1:
+            messages.popleft()
+
+        print messages
+        if len(messages) > 0:
+            yield 'data: %s\n\n' % json.dumps(messages[0])
 
         sleep(1)
 
