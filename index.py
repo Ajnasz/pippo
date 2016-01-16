@@ -30,6 +30,7 @@ def static(path):
 
 @post('/take-photo')
 def take_photo():
+    photo = Photo()
     photo.take_photo()
 
     return {
@@ -44,6 +45,7 @@ def subscribe():
     response.cache_control = 'no-cache'
 
     photo = Photo()
+    photo.subscribe()
 
     # Keep connection alive no more then... (s)
     while True:
