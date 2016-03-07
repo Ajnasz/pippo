@@ -16,7 +16,7 @@ def index():
 
 @get('/data/<start>/<end>')
 def data(start, end):
-    d = DHTStorage(key=config['key'], host=config['host'])
+    d = DHTStorage(key=config['key'], host=config['host'], port=config['port'], db=config['db'])
     return {
             'humiditys': map(json.loads, d.get_humidity(start, end)),
             'temperatures': map(json.loads, d.get_temperature(start, end)),

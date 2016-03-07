@@ -35,7 +35,7 @@ def toadaio(client_key, humidity, temperature):
 		pass
 
 def todhtstorage(config, humidity, temperature):
-	storage = DHTStorage(key=config['key'], host=config['host'])
+	storage = DHTStorage(key=config['key'], host=config['host'], port=config['port'], db=config['db'])
 
 	storage.add_temperature(temperature)
 	storage.add_humidity(humidity)
