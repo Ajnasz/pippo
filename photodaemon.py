@@ -14,7 +14,6 @@ def take_photo():
     time.sleep(1)
     camera.capture('static/photo.jpg')
     camera.close()
-    r.publish('photo', time.time())
     print "%s Capture done" % (time.strftime('%Y.%m.%d %H:%M:%S %Z'))
 
 def get_config():
@@ -32,6 +31,7 @@ def main():
         message = p.get_message()
         if message and message['type'] == 'message':
             take_photo()
+            r.publish('photo', time.time())
 
         time.sleep(0.1)
 
