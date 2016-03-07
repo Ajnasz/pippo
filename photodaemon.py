@@ -1,6 +1,13 @@
 import picamera
 import redis
 import time
+import json
+import os
+
+with open(os.path.join(os.path.dirname(__file__), 'config.json')) as data_file:
+    config = json.load(data_file)
+
+print config
 
 def take_photo():
     camera = picamera.PiCamera()
@@ -9,7 +16,7 @@ def take_photo():
     camera.close()
     r.publish('photo', time.time())
 
-r = redis.StrictRedis(host='localhost', port=6379, db=0)
+r = redis.StrictRedis(host=config['host'], port=config['port'], db=config['db'])
 p = r.pubsub()
 p.subscribe('take-photo')
 

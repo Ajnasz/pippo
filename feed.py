@@ -34,8 +34,8 @@ def toadaio(client_key, humidity, temperature):
 	except Adafruit_IO.errors.ThrottlingError:
 		pass
 
-def todhtstorage(client_key, humidity, temperature):
-	storage = DHTStorage(client_key)
+def todhtstorage(config, humidity, temperature):
+	storage = DHTStorage(key=config['key'], host=config['host'])
 
 	storage.add_temperature(temperature)
 	storage.add_humidity(humidity)

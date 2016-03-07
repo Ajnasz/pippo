@@ -3,8 +3,8 @@ import json
 import time
 
 class DHTStorage():
-	def __init__(self, key):
-		self.redis = redis.StrictRedis(host='localhost', port=6379, db=0)
+	def __init__(self, key, host='localhost', port=6379, db=0):
+		self.redis = redis.StrictRedis(host=host, port=port, db=0)
 		self.key = key
 
 	def get_key(self, name):
