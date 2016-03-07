@@ -322,7 +322,7 @@
 	}
 
 	function showPhoto() {
-		updatePhotoSize();
+		// updatePhotoSize();
 		getElem('#Photo').classList.add('visible');
 	}
 
