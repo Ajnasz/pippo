@@ -12,6 +12,8 @@ print config
 def take_photo():
     camera = picamera.PiCamera()
     camera.resolution = (1280, 720)
+    camera.hflip = True
+    time.sleep(1)
     camera.capture('static/photo.jpg')
     camera.close()
     r.publish('photo', time.time())
