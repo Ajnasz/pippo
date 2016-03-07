@@ -4,7 +4,7 @@ Send temperature and humidity stats into io.adafruit.com and into your local red
 
 ## Setup
 
-* Install redis, python-bottle for the webserver.
+* Install redis, python-redis, python-picamera, python-bottle, python-gevent.
 * Install Adafruit_DHT and Adafruit_IO python packages.
 * Open config.json and set the key to your adafruit.io key. (The same key will be used as a namespace in your local redis server)
 
