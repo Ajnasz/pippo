@@ -10,15 +10,13 @@ from collections import deque
 with open('config.json') as data_file:
 	config = json.load(data_file)
 
-client_key = config['key']
-
 @get('/')
 def index():
     return template('index')
 
 @get('/data/<start>/<end>')
 def data(start, end):
-    d = DHTStorage(client_key)
+    d = DHTStorage(config)
     return {
             'humiditys': map(json.loads, d.get_humidity(start, end)),
             'temperatures': map(json.loads, d.get_temperature(start, end)),
