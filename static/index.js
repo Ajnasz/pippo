@@ -246,7 +246,8 @@
 			type: 'datetime',
 			labels: {
 				formatter: function () {
-					return (new Date(this.value)).toLocaleTimeString();
+					var d = new Date(this.value);
+					return d.toDateString() + ' ' + d.toTimeString();
 				}
 			}
 		}
@@ -336,6 +337,8 @@
 	}
 
 	function updatePhoto(msg) {
+		console.log('on message', msg);
+
 		var data = JSON.parse(msg.data);
 
 		if (data.data) {
