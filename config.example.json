@@ -1,6 +1,6 @@
 {
 	"host": "localhost",
-	"port": 6739,
+	"port": 6379,
 	"db": 0,
 	"key": "asecretkey"
 }
