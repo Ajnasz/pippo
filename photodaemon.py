@@ -1,3 +1,5 @@
+#!/bin/env python
+
 import picamera
 import redis
 import time
@@ -24,7 +26,7 @@ p.subscribe('take-photo')
 
 while True:
     message = p.get_message()
-    if message:
+    if message and message['type'] == 'message':
         take_photo()
 
     time.sleep(0.005)
