@@ -276,7 +276,7 @@
 	function getTooltip(x, y, unit) {
 		var d = new Date(x),
 			// date = d.toLocaleString();
-			date =  d.toDateString() + ' ' + d.toTimeString();
+			date =  d.toString();
 
 		return `${date}<br><b>${fixValue(y)}${unit}</b>`;
 	}
@@ -337,8 +337,6 @@
 	}
 
 	function updatePhoto(msg) {
-		console.log('on message', msg);
-
 		var data = JSON.parse(msg.data);
 
 		if (data.data) {
