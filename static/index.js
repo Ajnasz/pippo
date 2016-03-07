@@ -246,8 +246,7 @@
 			type: 'datetime',
 			labels: {
 				formatter: function () {
-					var d = new Date(this.value);
-					return d.toDateString() + ' ' + d.toTimeString();
+					return (new Date(this.value)).toLocaleTimeString();
 				}
 			}
 		}
@@ -276,7 +275,8 @@
 
 	function getTooltip(x, y, unit) {
 		var d = new Date(x),
-			date = d.toLocaleString();
+			// date = d.toLocaleString();
+			date =  d.toDateString() + ' ' + d.toTimeString();
 
 		return `${date}<br><b>${fixValue(y)}${unit}</b>`;
 	}
