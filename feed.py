@@ -23,7 +23,9 @@ def send(client, humidity, temperature):
 	client.send('humidity', '{0:0.3f}'.format(humidity))
 	client.send('temperature',  '{0:0.3f}'.format(temperature))
 
-def toadaio(client_key, humidity, temperature):
+def toadaio(config, humidity, temperature):
+	client_key = config['key']
+
 	try:
 		aio = Adafruit_IO.Client(client_key)
 		send(aio, humidity, temperature)
@@ -88,9 +90,8 @@ def main():
 			with open(os.path.join(os.path.dirname(__file__), 'config.json')) as data_file:
 				config = json.load(data_file)
 
-			client_key = config['key']
-			todhtstorage(client_key, humidity, temperature)
-			toadaio(client_key, humidity, temperature)
+			todhtstorage(config, humidity, temperature)
+			toadaio(config, humidity, temperature)
 			# print 'Temp={0:0.1f}*  Humidity={1:0.1f}%'.format(temperature, humidity)
 		else:
 			print 'Failed to get reading. Try again!'
