@@ -17,10 +17,12 @@ class DHTStorage():
 	def add_humidity(self, value):
 		self.send('humidity', value)
 		self.remove_old('humidity')
+		# self.remove_invalids('humidity')
 
 	def add_temperature(self, value):
 		self.send('temperature', value)
 		self.remove_old('temperature')
+		# self.remove_invalids('temperature')
 
 	def get_data(self, name, start=0, end=200):
 		return self.redis.lrange(name, start, end)
@@ -33,6 +35,26 @@ class DHTStorage():
 
 	def remove_old(self, name, len=100000):
 		self.redis.ltrim(self.get_key(name), 0, len)
+
+	def remove_invalids(self, name):
+		step = 100
+		last = self.redis.llen(name)
+
+		while last > 0:
+			if last < step:
+				start = 0
+			else:
+				start = last - step
+
+			item_list = self.get_data(name, start, last)
+
+			for a in item_list:
+				item = json.loads(a)
+				if float(item['value']) > 150:
+					print a
+					last = last + self.redis.lrem(name, 0, a)
+
+			last = last - step
 
 
 class Photo():
