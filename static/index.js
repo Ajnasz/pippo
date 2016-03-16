@@ -63,6 +63,9 @@
 	};
 
 	var gaugeOptions = {
+		credits: {
+			enabled: false
+		},
 
 		chart: {
 			backgroundColor: bgColor,
@@ -237,11 +240,17 @@
 	}
 
 	var lineChartConf = {
+		credits: {
+			enabled: false
+		},
+
 		chart: {
 			backgroundColor: bgColor,
 			type: 'line'
 		},
+
 		title: false,
+
 		xAxis: {
 			type: 'datetime',
 			labels: {
