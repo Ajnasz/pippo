@@ -25,7 +25,14 @@ def main():
 
     r = redis.StrictRedis(host=config['host'], port=config['port'], db=config['db'])
     p = r.pubsub()
-    p.subscribe('take-photo')
+    while True:
+        try:
+            p.subscribe('take-photo')
+            break
+        except redis.exceptions.ConnectionError:
+            print "could not connect"
+            time.sleep(1)
+            pass
 
     while True:
         message = p.get_message()
