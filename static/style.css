@@ -340,3 +340,35 @@ button:active {
 		margin-right: 0;
 	}
 }
+
+
+.c3-tooltip {
+	background: #000;
+	color: #fff;
+}
+.c3-tooltip th {
+	background: #000;
+	color: #fff;
+}
+.c3-tooltip td {
+	background: #000;
+	color: #fff;
+}
+
+.c3 line,
+.c3 path {
+	stroke: #707073;
+}
+
+.c3-legend-item text {
+	fill: #707073;
+}
+.c3-axis-y .tick,
+.c3-axis-x .tick {
+	fill: #707073;
+}
+
+.c3-chart-arcs .c3-chart-arcs-gauge-unit,
+.c3-chart-arc .c3-gauge-value {
+	fill: #fff;
+}

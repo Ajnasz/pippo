@@ -4,12 +4,15 @@
 		<title>Temperature and Humidity</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<link rel="stylesheet" type="text/css" href="/static/fonts.css">
+		<link rel="stylesheet" type="text/css" href="/static/vendor/c3/c3.min.css">
 		<link rel="stylesheet" type="text/css" href="/static/style.css">
 		<link rel="icon" href="/static/pippo.png">
-		<script src="https://code.highcharts.com/highcharts.js"></script>
-		<script src="https://code.highcharts.com/highcharts-more.js"></script>
-		<script src="https://code.highcharts.com/modules/solid-gauge.js"></script>
-		<script src="/static/dark-unica.js"></script>
+		<!-- <script src="https://code.highcharts.com/highcharts.js"></script> -->
+		<!-- <script src="https://code.highcharts.com/highcharts-more.js"></script> -->
+		<!-- <script src="https://code.highcharts.com/modules/solid-gauge.js"></script> -->
+		<!-- <script src="/static/dark-unica.js"></script> -->
+		<script src="/static/vendor/d3/d3.min.js"></script>
+		<script src="/static/vendor/c3/c3.min.js"></script>
 		<script src="/static/index.js"></script>
 	</head>
 	<body>
