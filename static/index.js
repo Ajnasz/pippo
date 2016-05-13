@@ -3,6 +3,120 @@
 (function () {
 	'use strict';
 
+	function assign(target, source) {
+		Object.keys(source).forEach(function (key) {
+			if (typeof source[key] === 'object') {
+				if (typeof target[key] !== 'object') {
+					target[key] = {};
+				}
+
+				assign(target[key], source[key]);
+			} else {
+				target[key] = source[key];
+			}
+		});
+	}
+
+	var chart = {
+		conf: null,
+		// },
+		// loadData: function () {
+		// }
+	};
+
+
+	var c3Chart = Object.create(chart);
+
+	c3Chart.create = function (elem) {
+		let conf = Object.create(this.conf);
+		conf.bindto = elem;
+		this.chart = c3.generate(conf);
+	};
+
+	c3Chart.configure = function (conf) {
+		assign(this.conf, conf);
+	};
+
+
+	var c3LineChart = Object.create(c3Chart);
+
+	c3LineChart.conf = {
+		data: {
+			x: 'x',
+			xFormat: '%Y-%m-%dT%H:%M:%S.%LZ',
+			colors: {
+				data: '#ff9925'
+			},
+			columns: []
+		},
+		axis: {
+			x: {
+				type: 'timeseries',
+				tick: {
+					format: '%Y-%m-%d %H:%M'
+				}
+			},
+			y: {
+				tick: {
+					format: d3.format('.2f')
+
+				}
+			}
+		},
+		grid: {
+			y: {
+				show: true
+			}
+		},
+		point: {
+			show: false
+		}
+	}
+
+	c3LineChart.loadData = function (data) {
+		var conf = {
+			columns: [
+				['x'].concat(data.map((item) => new Date(Math.ceil(item.time * 1000)).toISOString())),
+				['data'].concat(data.map((item) => item.value))
+			]
+		};
+
+		this.chart.load(conf);
+	};
+
+	var c3GuageChart = Object.create(c3Chart);
+
+	c3GuageChart.conf = {
+		data: {
+			type: 'gauge',
+			colors: {
+				data: '#ff9925'
+			},
+			columns: [
+				['data', 0]
+			]
+		},
+		gauge: {
+			label: {
+				format: d3.format('.2f'),
+			},
+			min: 10,
+			max: 50,
+		},
+		size: {
+			height: 180
+		}
+	};
+
+	c3GuageChart.loadData = function (data) {
+		this.chart.load({
+			columns: [
+				['data', data[0].value]
+			]
+		});
+	};
+
+
 	/* DOM utilities */
 	function getElem(selector) {
 		return document.querySelector(selector);
@@ -132,12 +246,8 @@
 		return Number(num.toFixed(2));
 	}
 
-	function setGaugeValue(chart, value) {
-		chart.load({
-			columns: [
-				['data', value]
-			]
-		})
+	function setGaugeValue(chart, data) {
+		chart.loadData(data);
 		// return chart.series[0].points[0].update(value);
 	}
 
@@ -145,23 +255,14 @@
 		var temp = fixValue(+data.temperatures[0].value),
 			hum = fixValue(+data.humiditys[0].value);
 
-		setGaugeValue(temperatureGaugeChart, temp);
-		setGaugeValue(humidityGaugeChart, hum);
+		setGaugeValue(temperatureGaugeChart, data.temperatures);
+		setGaugeValue(humidityGaugeChart, data.humiditys);
 
 		return Promise.resolve(data);
 	}
 
 	function updateChart(chart, data) {
-		var conf = {
-			columns: [
-				['x'].concat(data.map((item) => new Date(Math.ceil(item.time * 1000)).toISOString())),
-				['data'].concat(data.map((item) => item.value))
-			]
-		};
-
-		console.log(conf);
-
-		chart.load(conf)
+		chart.loadData(data);
 		// chart.series[0].setData(transformData(data));
 	}
 
@@ -217,7 +318,21 @@
 	}
 
 	function createTemperatureGauge() {
-		return createC3GaugeChart(getElem(temperatureGaugeContainer), celsius);
+		var chart = createC3GaugeChart(getElem(temperatureGaugeContainer), {
+			gauge: {
+				units: celsius
+			},
+			tooltip: {
+				format: {
+					value: function (value) {
+						return fixValue(value) + celsius;
+					}
+				}
+			}
+		});
+
+		return chart;
+
 		var options = Highcharts.merge(gaugeOptions, {
 			yAxis: {
 				min: 10,
@@ -240,7 +355,19 @@
 	}
 
 	function createHumidityGauge() {
-		return createC3GaugeChart(getElem(humidityGaugeContainer), '%');
+		return createC3GaugeChart(getElem(humidityGaugeContainer), {
+			gauge: {
+				units: '%'
+			},
+			tooltip: {
+				format: {
+					value: function (value) {
+						return fixValue(value) + '%';
+					}
+				}
+			}
+
+		});
 		var options = Highcharts.merge(gaugeOptions, {
 			yAxis: {
 				min: 0,
@@ -314,76 +441,19 @@
 	}
 
 	function createC3Chart(userConf, elem) {
-		var conf = Object.assign({
-			bindto: getElem(elem),
-			data: {
-				x: 'x',
-				xFormat: '%Y-%m-%dT%H:%M:%S.%LZ',
-				colors: {
-					data: '#ff9925'
-				},
-				columns: []
-			},
-			axis: {
-				x: {
-					type: 'timeseries',
-					tick: {
-						format: '%Y-%m-%d %H:%M'
-					}
-				},
-				y: {
-					tick: {
-						format: d3.format('.2f')
+		var chart = Object.create(c3LineChart);
+		chart.configure(userConf);
+		chart.create(elem);
 
-					}
-				}
-			},
-			point: {
-				show: false
-			}
-
-		}, userConf);
-
-		return c3.generate(conf);
+		return chart;
 	}
 
-	function createC3GaugeChart(elem, units) {
-		var conf = {
-			bindto: elem,
-			data: {
-				type: 'gauge',
-				colors: {
-					data: '#ff9925'
-				},
-				columns: [
-					['data', 0]
-				]
-			},
-			gauge: {
-				label: {
-					format: function(value, ratio) {
-						return value;
-					},
-				//            show: false // to turn off the min/max labels.
-				},
-				min: 10,
-				max: 50,
-				units: units,
-				//    width: 39 // for adjusting arc thickness
-			},
-			color: {
-				// pattern: ['#FF0000', '#F97600', '#F6C600', '#60B044'], // the three color levels for the percentage values.
-				threshold: {
-					//            unit: 'value', // percentage is default
-					//            max: 200, // 100 is default
-					// values: [30, 60, 90, 100]
-				}
-			},
-			size: {
-				height: 180
-			}
-		}
-		return c3.generate(conf);
+	function createC3GaugeChart(elem, userConf) {
+		var chart = Object.create(c3GuageChart);
+		chart.configure(userConf);
+		chart.create(elem);
+
+		return chart;
 	}
 
 	function createTemperatureChart() {
