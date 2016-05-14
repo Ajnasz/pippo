@@ -345,10 +345,12 @@ button:active {
 .c3-tooltip {
 	background: #000;
 	color: #fff;
+	/* font-family: "Lato", sans-serif; */
 }
 .c3-tooltip th {
 	background: #000;
 	color: #fff;
+	font-weight: normal;
 }
 .c3-tooltip td {
 	background: #000;
@@ -368,7 +370,14 @@ button:active {
 	fill: #707073;
 }
 
+.c3 svg {
+	background-color: rgba(0, 0, 0, .2);
+}
 .c3-chart-arcs .c3-chart-arcs-gauge-unit,
 .c3-chart-arc .c3-gauge-value {
 	fill: #fff;
+}
+
+.c3-chart-arcs .c3-chart-arcs-background {
+	fill: #666;
 }

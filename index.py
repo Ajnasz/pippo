@@ -45,14 +45,24 @@ def subscribe():
     photo = Photo()
     photo.subscribe()
 
+    connected = True
+
     # Keep connection alive no more then... (s)
-    while True:
+    while connected:
         message = photo.pubsub.get_message()
 
-        if message:
-            yield 'data: %s\n\n' % json.dumps(message)
+        try:
+            if message:
+                yield 'data: %s\n\n' % json.dumps(message)
+            else:
+                yield 'data: %s\n\n' % json.dumps({'keepalive': True})
+        except:
+             print "disconnected"
+	     connected = False
 
         sleep(1)
+
+    photo.unsubscribe()
 
 if __name__ == '__main__':
     run(host='0.0.0.0', port=8080, server=GeventServer)

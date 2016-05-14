@@ -1,7 +1,13 @@
 {
+	"parserOptions": {
+		"ecmaVersion": 6,
+		"ecmaFeatures": {
+			"blockBindings": true
+		}
+	},
 	"env": {
-		"browser": true,
-		"esnext": true
+		"es6": true,
+		"browser": true
 	},
 	"rules": {
 		"no-floating-decimal": 0,

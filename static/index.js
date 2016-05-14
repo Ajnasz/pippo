@@ -2,10 +2,29 @@
 
 (function () {
 	'use strict';
+	const bgColor = 'rgba(0, 0, 0, 0.2)';
+	const celsius = '°C';
+	const textTemperature = 'Temperature';
+	const textHumidity = 'Humidity';
 
-	function assign(target, source) {
+	const temperatureContainer = '#Temperature';
+	const humidityContainer = '#Humidity';
+
+	const temperatureGaugeContainer = '#TemperatureVal';
+	const humidityGaugeContainer = '#HumidityVal';
+
+
+	function assign(target) {
+		let args = Array.prototype.slice.call(arguments, 1);
+
+		if (!args.length) {
+			return;
+		}
+
+		let source = args.shift();
+
 		Object.keys(source).forEach(function (key) {
-			if (typeof source[key] === 'object') {
+			if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
 				if (typeof target[key] !== 'object') {
 					target[key] = {};
 				}
@@ -15,15 +34,23 @@
 				target[key] = source[key];
 			}
 		});
+
+		assign.apply(null, [target].concat(args));
 	}
 
 	var chart = {
 		conf: null,
+		configure: function (conf) {
+			let newConf = {};
+
+			assign(newConf, this.conf, conf);
+
+			this.conf = newConf;
+		}
 		// },
 		// loadData: function () {
 		// }
 	};
-
 
 	var c3Chart = Object.create(chart);
 
@@ -33,26 +60,28 @@
 		this.chart = c3.generate(conf);
 	};
 
-	c3Chart.configure = function (conf) {
-		assign(this.conf, conf);
-	};
-
-
 	var c3LineChart = Object.create(c3Chart);
 
 	c3LineChart.conf = {
+		color: {
+			pattern: [
+				'#ff9925', '#ff3925', '#f45b5b', '#7798bf', '#aaeeee',
+				'#ff0066', '#eeaaee', '#55bf3b', '#df5353', '#7798bf',
+				'#aaeeee'
+			]
+		},
 		data: {
 			x: 'x',
 			xFormat: '%Y-%m-%dT%H:%M:%S.%LZ',
-			colors: {
-				data: '#ff9925'
-			},
 			columns: []
 		},
 		axis: {
 			x: {
 				type: 'timeseries',
 				tick: {
+					culling: {
+						max: 5
+					},
 					format: '%Y-%m-%d %H:%M'
 				}
 			},
@@ -71,7 +100,7 @@
 		point: {
 			show: false
 		}
-	}
+	};
 
 	c3LineChart.loadData = function (data) {
 		var conf = {
@@ -87,11 +116,15 @@
 	var c3GuageChart = Object.create(c3Chart);
 
 	c3GuageChart.conf = {
+		color: {
+			pattern: [
+				'#ff9925', '#ff3925', '#f45b5b', '#7798bf', '#aaeeee',
+				'#ff0066', '#eeaaee', '#55bf3b', '#df5353', '#7798bf',
+				'#aaeeee'
+			]
+		},
 		data: {
 			type: 'gauge',
-			colors: {
-				data: '#ff9925'
-			},
 			columns: [
 				['data', 0]
 			]
@@ -101,7 +134,6 @@
 				format: d3.format('.2f'),
 			},
 			min: 10,
-			max: 50,
 		},
 		size: {
 			height: 180
@@ -116,67 +148,48 @@
 		});
 	};
 
+	var highCharts = Object.create(chart);
 
-	/* DOM utilities */
-	function getElem(selector) {
-		return document.querySelector(selector);
-	}
+	highCharts.create = function (elem) {
+		let conf = {};
+		assign(conf, this.conf);
 
-	function on(elem, event, cb) {
-		elem.addEventListener(event, cb);
-	}
+		this.chart = new Highcharts.Chart(elem, conf);
+	};
 
-	function setTextContent(elem, value) {
-		while (elem.firstChild) {
-			elem.removeChild(elem.firstChild);
-		}
+	var highChartsLine = Object.create(highCharts);
 
-		elem.appendChild(document.createTextNode(value));
-	}
-
-	/* DOM utilities end */
-
-	const duration = Object.freeze((function () {
-		const sec = 1000,
-			min = 60 * sec,
-			hour = 60 * min,
-			day = 24 * hour,
-			week = 7 * day;
-
-		return {
-			SECOND: sec,
-			MINUTE: min,
-			HOUR: hour,
-			DAY: day,
-			WEEK: week
-		};
-	}()));
-
-	const bgColor = 'rgba(0, 0, 0, 0.2)';
-	const celsius = '°C';
-	const textTemperature = 'Temperature';
-	const textHumidity = 'Humidity';
-
-	const temperatureContainer = '#Temperature';
-	const humidityContainer = '#Humidity';
-
-	const temperatureGaugeContainer = '#TemperatureVal';
-	const humidityGaugeContainer = '#HumidityVal';
-
-	var temperatureChart, humidityChart;
-	var temperatureGaugeChart, humidityGaugeChart;
-
-	var setting = {
-		get from() {
-			return Number(getElem('#InputFrom').value);
+	highChartsLine.conf = {
+		credits: {
+			enabled: false
 		},
 
-		get to() {
-			return Number(getElem('#InputTo').value);
+		chart: {
+			backgroundColor: bgColor,
+			type: 'line'
+		},
+
+		title: false,
+
+		xAxis: {
+			type: 'datetime',
+			labels: {
+				formatter: function () {
+					return (new Date(this.value)).toLocaleTimeString();
+				}
+			}
 		}
 	};
 
-	var gaugeOptions = {
+	highChartsLine.loadData = function (data) {
+		let transformed = transformData(data);
+
+		this.chart.series[0].setData(transformed);
+	};
+
+	var highChartsGauge = Object.create(highCharts);
+
+	highChartsGauge.conf = {
 		credits: {
 			enabled: false
 		},
@@ -235,6 +248,59 @@
 		}
 	};
 
+	highChartsGauge.loadData = function (data) {
+		this.chart.series[0].points[0].update(fixValue(data[0].value));
+	};
+
+
+	/* DOM utilities */
+	function getElem(selector) {
+		return document.querySelector(selector);
+	}
+
+	function on(elem, event, cb) {
+		elem.addEventListener(event, cb);
+	}
+
+	function setTextContent(elem, value) {
+		while (elem.firstChild) {
+			elem.removeChild(elem.firstChild);
+		}
+
+		elem.appendChild(document.createTextNode(value));
+	}
+
+	/* DOM utilities end */
+
+	const duration = Object.freeze((function () {
+		const sec = 1000,
+			min = 60 * sec,
+			hour = 60 * min,
+			day = 24 * hour,
+			week = 7 * day;
+
+		return {
+			SECOND: sec,
+			MINUTE: min,
+			HOUR: hour,
+			DAY: day,
+			WEEK: week
+		};
+	}()));
+
+	var temperatureChart, humidityChart;
+	var temperatureGaugeChart, humidityGaugeChart;
+
+	var setting = {
+		get from() {
+			return Number(getElem('#InputFrom').value);
+		},
+
+		get to() {
+			return Number(getElem('#InputTo').value);
+		}
+	};
+
 	function transformData(data) {
 		return data.map(x => [
 			parseInt(x.time * 1000, 10),
@@ -252,9 +318,6 @@
 	}
 
 	function setGaugeValues(data) {
-		var temp = fixValue(+data.temperatures[0].value),
-			hum = fixValue(+data.humiditys[0].value);
-
 		setGaugeValue(temperatureGaugeChart, data.temperatures);
 		setGaugeValue(humidityGaugeChart, data.humiditys);
 
@@ -269,8 +332,6 @@
 	function updateCharts(data) {
 		updateChart(temperatureChart, data.temperatures);
 		updateChart(humidityChart, data.humiditys);
-		// temperatureChart.series[0].setData(transformData(data.temperatures));
-		// humidityChart.series[0].setData(transformData(data.humiditys));
 
 		return Promise.resolve(data);
 	}
@@ -318,9 +379,15 @@
 	}
 
 	function createTemperatureGauge() {
-		var chart = createC3GaugeChart(getElem(temperatureGaugeContainer), {
+		return createC3GaugeChart(getElem(temperatureGaugeContainer), {
+			data: {
+				names: {
+					data: textTemperature
+				}
+			},
 			gauge: {
-				units: celsius
+				units: celsius,
+				max: 50,
 			},
 			tooltip: {
 				format: {
@@ -331,9 +398,9 @@
 			}
 		});
 
-		return chart;
 
-		var options = Highcharts.merge(gaugeOptions, {
+		/*
+		return createHighChartsGaugeChart({
 			yAxis: {
 				min: 10,
 				max: 50,
@@ -349,15 +416,20 @@
 				}
 			}]
 
-		});
-
-		return new Highcharts.Chart(getElem(temperatureGaugeContainer), options);
+		}, getElem(temperatureGaugeContainer));
+		*/
 	}
 
 	function createHumidityGauge() {
 		return createC3GaugeChart(getElem(humidityGaugeContainer), {
+			data: {
+				names: {
+					data: textHumidity
+				}
+			},
 			gauge: {
-				units: '%'
+				units: '%',
+				max: 100,
 			},
 			tooltip: {
 				format: {
@@ -368,7 +440,9 @@
 			}
 
 		});
-		var options = Highcharts.merge(gaugeOptions, {
+
+		/*
+		return createHighChartsGaugeChart({
 			yAxis: {
 				min: 0,
 				max: 100,
@@ -384,32 +458,9 @@
 				}
 			}]
 
-		});
-
-		return new Highcharts.Chart(getElem(humidityGaugeContainer), options);
+		}, getElem(humidityGaugeContainer));
+		*/
 	}
-
-	var lineChartConf = {
-		credits: {
-			enabled: false
-		},
-
-		chart: {
-			backgroundColor: bgColor,
-			type: 'line'
-		},
-
-		title: false,
-
-		xAxis: {
-			type: 'datetime',
-			labels: {
-				formatter: function () {
-					return (new Date(this.value)).toLocaleTimeString();
-				}
-			}
-		}
-	};
 
 	var updateTitle = (function () {
 		var lastUpdate = 0;
@@ -440,24 +491,38 @@
 		return `${date}<br><b>${fixValue(y)}${unit}</b>`;
 	}
 
-	function createC3Chart(userConf, elem) {
-		var chart = Object.create(c3LineChart);
+	function createChart(base, userConf, elem) {
+		var chart = Object.create(base);
+
 		chart.configure(userConf);
 		chart.create(elem);
 
 		return chart;
 	}
 
-	function createC3GaugeChart(elem, userConf) {
-		var chart = Object.create(c3GuageChart);
-		chart.configure(userConf);
-		chart.create(elem);
+	function createC3Chart(userConf, elem) {
+		return createChart(c3LineChart, userConf, elem);
+	}
 
-		return chart;
+	function createC3GaugeChart(elem, userConf) {
+		return createChart(c3GuageChart, userConf, elem);
+	}
+
+	function createHighChartsChart(userConf, elem) {
+		return createChart(highChartsLine, userConf, elem);
+	}
+
+	function createHighChartsGaugeChart(userConf, elem) {
+		return createChart(highChartsGauge, userConf, elem);
 	}
 
 	function createTemperatureChart() {
 		return createC3Chart({
+			data: {
+				names: {
+					data: textTemperature
+				}
+			},
 			tooltip: {
 				format: {
 					value: function (value) {
@@ -468,9 +533,8 @@
 			}
 		}, temperatureContainer);
 
-
-		/*
-		var options = Highcharts.merge(lineChartConf, {
+	   /*
+		return createHighChartsChart({
 			tooltip: {
 				formatter: function () {
 					return getTooltip(this.x, this.y, celsius);
@@ -480,14 +544,17 @@
 				name: textTemperature,
 				data: []
 			}]
-		});
-
-		return new Highcharts.Chart(getElem(temperatureContainer), options);
+		}, getElem(temperatureContainer));
 		*/
 	}
 
 	function createHumidityChart() {
 		return createC3Chart({
+			data: {
+				names: {
+					data: textHumidity
+				}
+			},
 			tooltip: {
 				format: {
 					value: function (value) {
@@ -497,6 +564,20 @@
 				}
 			}
 		}, humidityContainer);
+
+		/*
+		return createHighChartsChart({
+			tooltip: {
+				formatter: function () {
+					return getTooltip(this.x, this.y, '%');
+				}
+			},
+			series: [{
+				name: textHumidity,
+				data: []
+			}]
+		}, getElem(humidityContainer));
+		*/
 	}
 
 	function takePhoto() {
