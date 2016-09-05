@@ -13,6 +13,18 @@
 	const temperatureGaugeContainer = '#TemperatureVal';
 	const humidityGaugeContainer = '#HumidityVal';
 
+	function fillNoData(data) {
+		data.forEach(function (item, index, array) {
+			if (index < array.length - 1) {
+				if (item[index + 1].time - item.time > 60 * 5) {
+					array.splice(index, 0, {
+						time: item.time + 1,
+						value: null
+					});
+				}
+			}
+		});
+	}
 
 	function assign(target) {
 		let args = Array.prototype.slice.call(arguments, 1);
@@ -302,6 +314,7 @@
 	};
 
 	function transformData(data) {
+		fillNoData(data);
 		return data.map(x => [
 			parseInt(x.time * 1000, 10),
 			parseFloat(x.value)
