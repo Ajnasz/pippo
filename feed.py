@@ -91,9 +91,14 @@ def main():
 				config = json.load(data_file)
 
 			todhtstorage(config, humidity, temperature)
-			toadaio(config, humidity, temperature)
 			# print 'Temp={0:0.1f}*  Humidity={1:0.1f}%'.format(temperature, humidity)
+			toadaio(config, humidity, temperature)
 		else:
+			try:
+				unlock()
+			except PippoNotLockedError:
+				pass
+
 			print 'Failed to get reading. Try again!'
 			sys.exit(1)
 	except Exception as ex:
