@@ -14,16 +14,22 @@
 	const humidityGaugeContainer = '#HumidityVal';
 
 	function fillNoData(data) {
-		data.forEach(function (item, index, array) {
-			if (index < array.length - 1) {
-				if (item[index + 1].time - item.time > 60 * 5) {
-					array.splice(index, 0, {
-						time: item.time + 1,
-						value: null
-					});
-				}
+		const minDiff = 60 * 2;
+
+		for (let i = 0; i < data.length - 1; i++) {
+			let item = data[i],
+				next =data[i + 1];
+
+			if (item.time  - next.time > minDiff) {
+				data.splice(i + 1, 0, {
+					time: item.time + minDiff,
+					value: null
+				});
+				i += 1;
 			}
-		});
+		}
+
+		return data;
 	}
 
 	function assign(target) {
@@ -314,8 +320,7 @@
 	};
 
 	function transformData(data) {
-		fillNoData(data);
-		return data.map(x => [
+		return fillNoData(data).map(x => [
 			parseInt(x.time * 1000, 10),
 			parseFloat(x.value)
 		]).sort((a, b) => a[0] - b[0]);
@@ -343,6 +348,8 @@
 	}
 
 	function updateCharts(data) {
+		fillNoData(data.temperatures);
+		fillNoData(data.humiditys);
 		updateChart(temperatureChart, data.temperatures);
 		updateChart(humidityChart, data.humiditys);
 
