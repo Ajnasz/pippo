@@ -6,6 +6,7 @@ import Adafruit_DHT
 import Adafruit_IO
 import json
 import requests
+import traceback
 from lib import DHTStorage
 
 
@@ -18,6 +19,14 @@ class PippoLockedError(Exception):
 class PippoNotLockedError(Exception):
 	def __init__(self):
 		self.msg = "Pippo not locked"
+
+class PippoArgumentError(Exception):
+	def __init__(self):
+		self.msg = "Bad argument! usage: sudo ./Adafruit_DHT.py [11|22|2302] 4"
+
+class PippoCantRead(Exception):
+	def __init__(self):
+		self.msg = "Failed to get reading. Try again!"
 
 def send(client, humidity, temperature):
 	client.send('humidity', '{0:0.3f}'.format(humidity))
@@ -59,8 +68,9 @@ def islocked():
 	return os.path.isfile(PIDFILE)
 
 def main():
-	lock()
+	err = False
 	try:
+		lock()
 		# Parse command line parameters.
 		sensor_args = { '11': Adafruit_DHT.DHT11,
 						'22': Adafruit_DHT.DHT22,
@@ -69,9 +79,7 @@ def main():
 			sensor = sensor_args[sys.argv[1]]
 			pin = sys.argv[2]
 		else:
-			print 'usage: sudo ./Adafruit_DHT.py [11|22|2302] GPIOpin#'
-			print 'example: sudo ./Adafruit_DHT.py 2302 4 - Read from an AM2302 connected to GPIO #4'
-			sys.exit(1)
+			raise PippoArgumentError()
 
 		# Try to grab a sensor reading.  Use the read_retry method which will retry up
 		# to 15 times to get a sensor reading (waiting 2 seconds between each retry).
@@ -91,25 +99,22 @@ def main():
 				config = json.load(data_file)
 
 			todhtstorage(config, humidity, temperature)
-			# print 'Temp={0:0.1f}*  Humidity={1:0.1f}%'.format(temperature, humidity)
 			toadaio(config, humidity, temperature)
+			# print 'Temp={0:0.1f}*  Humidity={1:0.1f}%'.format(temperature, humidity)
 		else:
-			try:
-				unlock()
-			except PippoNotLockedError:
-				pass
-
-			print 'Failed to get reading. Try again!'
-			sys.exit(1)
+			raise PippoCantRead()
 	except Exception as ex:
-		print ex
+		err = True
+		print traceback.format_exc()
+		print ex.msg
 
 	try:
 		unlock()
 	except PippoNotLockedError:
 		pass
 
-
-
+	
+	if err:
+		sys.exit(1)
 main()
 # vim: set ts=4 sw=4 noet
